@@ -1,11 +1,8 @@
-import sys
-import os
-sys.path.insert(0, "/app")
-sys.path.insert(0, "/app/packages")
-
+from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+
 from app.db.database import get_db
 from packages.core.models.user import User
 from packages.core.schemas.user import UserCreate, UserLogin, UserResponse, TokenResponse
@@ -20,7 +17,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
+async def register(
+    user_data: UserCreate,
+    db: Annotated[AsyncSession, Depends(get_db)]
+):
     result = await db.execute(select(User).where(User.email == user_data.email))
     if result.scalar_one_or_none():
         raise HTTPException(
@@ -35,6 +35,7 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         last_name=user_data.last_name,
         role="user"
     )
+
     db.add(user)
     await db.commit()
     await db.refresh(user)
@@ -42,7 +43,10 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(
+    credentials: UserLogin,
+    db: Annotated[AsyncSession, Depends(get_db)]
+):
     result = await db.execute(select(User).where(User.email == credentials.email))
     user = result.scalar_one_or_none()
 
@@ -57,5 +61,7 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(current_user: User = Depends(get_current_user)):
+async def get_me(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
     return current_user
