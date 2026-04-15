@@ -11,6 +11,8 @@ export default function BlogManager() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   // 📝 ESTADOS DEL FORMULARIO
+    // 📝 ESTADOS DEL FORMULARIO
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState(""); 
