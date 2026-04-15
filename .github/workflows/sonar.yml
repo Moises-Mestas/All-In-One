@@ -4,20 +4,27 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sonar:
+  sonarcloud:
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Crucial para que Sonar vea el historial y compare cambios
 
-
-    name: SonarCloud Scan
-  uses: SonarSource/sonarcloud-github-action@v2
-  with:
-    args: >
-      -Dsonar.projectKey=Moises-Mestas_All-In-One
-      -Dsonar.organization=moises-mestas
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=Moises-Mestas_All-In-One
+            -Dsonar.organization=moises-mestas
+            -Dsonar.sources=apps,packages
+            -Dsonar.python.version=3
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necesario para comentar en PRs
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
