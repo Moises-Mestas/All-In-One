@@ -1,0 +1,23 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+
+    name: SonarCloud Scan
+  uses: SonarSource/sonarcloud-github-action@v2
+  with:
+    args: >
+      -Dsonar.projectKey=Moises-Mestas_All-In-One
+      -Dsonar.organization=moises-mestas
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

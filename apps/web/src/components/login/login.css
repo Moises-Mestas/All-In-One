@@ -1,0 +1,108 @@
+.card-login {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-login .logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.card-login .logo-container img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.card-login .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-login .form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-login .form-group input {
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.card-login .form-group input:focus {
+  outline: none;
+  border-color: #6366f1;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.card-login .card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.card-login .card-footer .btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.card-login .card-footer .btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.card-login .card-footer .link-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.card-login .card-footer .link-text a {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.card-login .card-footer .link-text a:hover {
+  text-decoration: underline;
+}
+
+.card-login .forgot-password {
+  text-align: center;
+  font-size: 13px;
+}
+
+.card-login .forgot-password a {
+  color: #999;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.card-login .forgot-password a:hover {
+  color: #6366f1;
+}
