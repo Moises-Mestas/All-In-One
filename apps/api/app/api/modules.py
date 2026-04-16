@@ -3,10 +3,10 @@ import os
 sys.path.insert(0, "/app")
 sys.path.insert(0, "/app/packages")
 
+from typing import List, Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from typing import List
 
 from app.db.database import get_db
 from packages.core.models.user import User
@@ -16,11 +16,14 @@ from app.core.security import get_current_user
 
 router = APIRouter(prefix="/modules", tags=["modules"])
 
+DBSession = Annotated[AsyncSession, Depends(get_db)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 @router.get("", response_model=List[ModuleResponse])
 async def list_modules(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: CurrentUser,
+    db: DBSession
 ):
     result = await db.execute(select(Module))
     modules = result.scalars().all()
@@ -30,8 +33,8 @@ async def list_modules(
 @router.post("", response_model=ModuleResponse, status_code=status.HTTP_201_CREATED)
 async def create_module(
     module_data: ModuleCreate,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: CurrentUser,
+    db: DBSession
 ):
     result = await db.execute(select(Module).where(Module.slug == module_data.slug))
     if result.scalar_one_or_none():
@@ -51,6 +54,7 @@ async def create_module(
         config_schema=module_data.config_schema,
         admin_url=module_data.admin_url,
     )
+
     db.add(module)
     await db.commit()
     await db.refresh(module)
@@ -60,17 +64,18 @@ async def create_module(
 @router.get("/{module_id}", response_model=ModuleResponse)
 async def get_module(
     module_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: CurrentUser,
+    db: DBSession
 ):
     result = await db.execute(select(Module).where(Module.id == module_id))
     module = result.scalar_one_or_none()
-    
+
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Módulo no encontrado"
         )
+
     return module
 
 
@@ -78,36 +83,21 @@ async def get_module(
 async def update_module(
     module_id: int,
     module_update: ModuleUpdate,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: CurrentUser,
+    db: DBSession
 ):
     result = await db.execute(select(Module).where(Module.id == module_id))
     module = result.scalar_one_or_none()
-    
+
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Módulo no encontrado"
         )
-    
-    if module_update.name is not None:
-        module.name = module_update.name
-    if module_update.slug is not None:
-        module.slug = module_update.slug
-    if module_update.description is not None:
-        module.description = module_update.description
-    if module_update.version is not None:
-        module.version = module_update.version
-    if module_update.is_system is not None:
-        module.is_system = module_update.is_system
-    if module_update.is_active is not None:
-        module.is_active = module_update.is_active
-    if module_update.icon is not None:
-        module.icon = module_update.icon
-    if module_update.config_schema is not None:
-        module.config_schema = module_update.config_schema
-    if module_update.admin_url is not None:
-        module.admin_url = module_update.admin_url
+
+    update_data = module_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(module, key, value)
 
     await db.commit()
     await db.refresh(module)
@@ -117,17 +107,17 @@ async def update_module(
 @router.delete("/{module_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_module(
     module_id: int,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: CurrentUser,
+    db: DBSession
 ):
     result = await db.execute(select(Module).where(Module.id == module_id))
     module = result.scalar_one_or_none()
-    
+
     if not module:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Módulo no encontrado"
         )
-    
+
     await db.delete(module)
     await db.commit()
