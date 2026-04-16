@@ -16,7 +16,12 @@ interface AuthModalProps {
 
 const API_URL = "http://localhost:8000";
 
-export default function AuthModal({ isOpen, onClose, siteId, mode }: AuthModalProps) {
+export default function AuthModal({
+  isOpen,
+  onClose,
+  siteId,
+  mode,
+}: AuthModalProps) {
   const [config, setConfig] = useState<AuthConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,7 +37,9 @@ export default function AuthModal({ isOpen, onClose, siteId, mode }: AuthModalPr
 
   const fetchConfig = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/api/v1/sites/${siteId}/auth/config`);
+      const { data } = await axios.get(
+        `${API_URL}/api/v1/sites/${siteId}/auth/config`,
+      );
       setConfig(data);
     } catch (err) {
       console.error("Error loading auth config:", err);
@@ -81,9 +88,22 @@ export default function AuthModal({ isOpen, onClose, siteId, mode }: AuthModalPr
 
   if (!isOpen) return null;
 
-  const renderField = (fieldName: string, label: string, type: string = "text", required: boolean = false) => (
+  const renderField = (
+    fieldName: string,
+    label: string,
+    type: string = "text",
+    required: boolean = false,
+  ) => (
     <div style={{ marginBottom: "16px" }} key={fieldName}>
-      <label style={{ display: "block", marginBottom: "6px", fontWeight: "500", color: "#374151", fontSize: "14px" }}>
+      <label
+        style={{
+          display: "block",
+          marginBottom: "6px",
+          fontWeight: "500",
+          color: "#374151",
+          fontSize: "14px",
+        }}
+      >
         {label} {required && <span style={{ color: "#ef4444" }}>*</span>}
       </label>
       <input
@@ -131,9 +151,10 @@ export default function AuthModal({ isOpen, onClose, siteId, mode }: AuthModalPr
       >
         <div
           style={{
-            background: mode === "login" 
-              ? "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
-              : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            background:
+              mode === "login"
+                ? "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+                : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
             padding: "24px",
             color: "white",
             display: "flex",
@@ -182,17 +203,29 @@ export default function AuthModal({ isOpen, onClose, siteId, mode }: AuthModalPr
               {renderField("email", "Correo Electrónico", "email", true)}
               {renderField("first_name", "Nombre", "text", false)}
               {renderField("last_name", "Apellido", "text", false)}
-              {config && config.registration_fields.includes("phone") && renderField("phone", "Teléfono", "tel", false)}
-              
+
+              {config?.registration_fields?.includes("phone") &&
+                renderField("phone", "Teléfono", "tel", false)}
+
               {config?.custom_fields.map((field) => (
                 <div key={field.name} style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", marginBottom: "6px", fontWeight: "500", color: "#374151", fontSize: "14px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "6px",
+                      fontWeight: "500",
+                      color: "#374151",
+                      fontSize: "14px",
+                    }}
+                  >
                     {field.label}
                   </label>
                   <input
                     type="text"
                     value={formData[`custom_${field.name}`] || ""}
-                    onChange={(e) => handleChange(`custom_${field.name}`, e.target.value)}
+                    onChange={(e) =>
+                      handleChange(`custom_${field.name}`, e.target.value)
+                    }
                     style={{
                       width: "100%",
                       padding: "12px",
@@ -227,7 +260,11 @@ export default function AuthModal({ isOpen, onClose, siteId, mode }: AuthModalPr
               marginTop: "8px",
             }}
           >
-            {loading ? "Procesando..." : mode === "login" ? "Iniciar Sesión" : "Crear Cuenta"}
+            {loading
+              ? "Procesando..."
+              : mode === "login"
+                ? "Iniciar Sesión"
+                : "Crear Cuenta"}
           </button>
         </form>
       </div>
