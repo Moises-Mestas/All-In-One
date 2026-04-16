@@ -123,6 +123,17 @@ export default function AuthModal({
     </div>
   );
 
+  // 🔥 FIX SONAR (sin ternario anidado)
+  let buttonText = "";
+
+  if (loading) {
+    buttonText = "Procesando...";
+  } else if (mode === "login") {
+    buttonText = "Iniciar Sesión";
+  } else {
+    buttonText = "Crear Cuenta";
+  }
+
   return (
     <div
       style={{
@@ -260,11 +271,7 @@ export default function AuthModal({
               marginTop: "8px",
             }}
           >
-            {loading
-              ? "Procesando..."
-              : mode === "login"
-                ? "Iniciar Sesión"
-                : "Crear Cuenta"}
+            {buttonText}
           </button>
         </form>
       </div>
